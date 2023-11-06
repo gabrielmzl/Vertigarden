@@ -17,6 +17,7 @@ export default function useFormate() {
     }
 
     const formatCpfCnpj = (value) => {
+        console.log(value);
         const number = value.replace(/\D/g, '');
 
         if (number.length === 11) {

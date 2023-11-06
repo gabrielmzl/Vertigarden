@@ -7,7 +7,7 @@ import useFormate from "../hooks/useFormate";
 import { Loader } from "../components/Loader";
 
 export function Home() {
-   const { resetFiltro, notifications } = useFiltro();
+   const { notifications, reset } = useFiltro();
    const { formatCpfCnpj, formatDate } = useFormate();
 
    const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,11 +23,6 @@ export function Home() {
 
    const closeUltimaNotificacao = () => {
       setUltimaNotificacao(false);
-   };
-
-   const reset = () => {
-      console.log('reset');
-      resetFiltro();
    };
 
    if (notifications.length === 0) {

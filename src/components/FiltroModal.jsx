@@ -6,7 +6,7 @@ import { useFiltro } from "../context/FiltroContext";
 export function FiltroModal({ isOpen, onClose, children }) {
    if (!isOpen) return null;
 
-   const { fetchNotifications } = useFiltro();
+   const { filtros, loadingFiltro, setPageFiltro } = useFiltro();
 
    const {
       register,
@@ -17,7 +17,7 @@ export function FiltroModal({ isOpen, onClose, children }) {
    });
 
    const submitFiltro = async (data) => {
-      await fetchNotifications(data);
+      await filtros(data);
       onClose();
    }
 
@@ -62,7 +62,7 @@ export function FiltroModal({ isOpen, onClose, children }) {
                </div>
 
                <button className="bg-green-dark text-white rounded w-full p-4 mt-6 font-normal">
-                  Aplicar filtros
+                  {loadingFiltro ? <span class="loader2"></span> : 'Aplicar filtros'}
                </button>
             </form>
          </div>
