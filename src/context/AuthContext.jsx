@@ -32,14 +32,14 @@ export function AuthProvider({ children }) {
                 login,
                 password
             })
-
-            localStorage.setItem('@token', data);
+            
+            localStorage.setItem('@token', data.payload);
             setIsAuthenticated(true);
-            setToken(data);
+            setToken(data.payload);
             navigate('/');
             alertaSucesso('Login realizado com sucesso!');
         } catch (error) {
-            alertaErro(error.response.data);
+            alertaErro(error.response.data.errors[0]);
         }
     }
 

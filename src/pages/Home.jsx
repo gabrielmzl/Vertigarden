@@ -1,84 +1,75 @@
-import { useEffect, useState } from "react";
-import api from "../services/api";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Loader } from "../components/Loader";
-import useAlert from "../hooks/useAlert";
+import { useState } from "react";
+import { FiltroModal } from "../components/FiltroModal";
+import { X } from "lucide-react";
+import { Notificacoes } from "../components/Notificacoes";
+import { useFiltro } from "../context/FiltroContext";
 import useFormate from "../hooks/useFormate";
+import { Loader } from "../components/Loader";
 
 export function Home() {
+   const { resetFiltro, notifications } = useFiltro();
+   const { formatCpfCnpj, formatDate } = useFormate();
 
-    const { alertaErro } = useAlert();
-    const { formatDate, formatCpfCnpj } = useFormate();
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [ultimaNotificacao, setUltimaNotificacao] = useState(true);
 
-    const [notifications, setNotifications] = useState([]);
-    const [hasMore, setHasMore] = useState(true);
-    const [page, setPage] = useState(1);
+   const openModal = () => {
+      setIsModalOpen(true);
+   };
 
-    const fetchNotifications = async (start, end) => {
-        setTimeout(async () => {
-            try {
-                const start = (page - 1) * 20 + 1;
-                const end = start + 19;
-                const { data } = await api.get(`/wlc?PagingStart=${start}&PagingEnd=${end}`);
-                console.log(data);
-                if (data.length === 0) {
-                    setHasMore(false);
-                } else {
-                    setNotifications([...notifications, ...data]);
-                    setPage(page + 1);
-                }
-            } catch (error) {
-                alertaErro("Erro ao carregar notificações");
-                setHasMore(false);
-            }
-        }, 1500);
-    };
+   const closeModal = () => {
+      setIsModalOpen(false);
+   };
 
-    useEffect(() => {
-        fetchNotifications();
-    }, []);
+   const closeUltimaNotificacao = () => {
+      setUltimaNotificacao(false);
+   };
 
-    return (
-        <div className="w-full flex flex-col">
-            <div>
-                <h2 className="text-xl">Ultimas notificações</h2>
+   const reset = () => {
+      console.log('reset');
+      resetFiltro();
+   };
 
-                <div className="mt-6">
-                    <InfiniteScroll className="w-full"
-                        dataLength={notifications.length}
-                        next={fetchNotifications}
-                        hasMore={hasMore}
-                        loader={<Loader />}
-                    >
-                        <table className="border border-[#9C9C9C]">
-                            <thead>
-                                <tr className="bg-[#ECEFEB] border-b border-[#9C9C9C]">
-                                    <th>Cliente</th>
-                                    <th>Documento</th>
-                                    <th>Dispositivo</th>
-                                    <th>Data</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+   if (notifications.length === 0) {
+      return (
+         <Loader />
+      )
+   }
 
-                                {notifications.map((notification) => (
-                                    <tr className="bg-white border-b border-[#9C9C9C]" key={notification.id}>
-                                        <td>{notification.customerName}</td>
-                                        <td>{formatCpfCnpj(notification.customerDoc)}</td>
-                                        <td>{notification.deviceToken}</td>
-                                        <td>{formatDate(notification.capturedAt)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </InfiniteScroll>
-                </div>
-            </div>
-            <div>
-                <div>
+   return (
+      <div className="w-full flex flex-col">
+         <div>
+            <h2 className="text-xl">Ultimas notificações</h2>
 
-                </div>
-            </div>
-        </div >
-    )
+            {ultimaNotificacao && (
+               <div className="mt-4 rounded shadow-lg p-4 bg-white border border-green-dark w-2/4">
+                  <div className="flex justify-between items-center">
+                     <h3>Ultima notificação</h3>
+
+                     <X className="hover:cursor-pointer" onClick={closeUltimaNotificacao} />
+                  </div>
+
+                  <div className="flex flex-col mt-4">
+                     <div>
+                        <b>Cliente:</b> {notifications[0].customerName} ({formatCpfCnpj(notifications[0].customerDoc)})
+                     </div>
+                     <div>
+                        <b>Dispositivo:</b> {notifications[0].deviceToken}
+                     </div>
+                     <div>
+                        <b>Data:</b> {formatDate(notifications[0].capturedAt)}
+                     </div>
+                  </div>
+               </div>
+            )}
+
+            <button onClick={openModal} className="bg-green-light mt-8 py-2 px-6 text-white rounded-md text-sm font-normal">Filtros</button>
+            <button onClick={reset} className="ml-4">Resetar filtros</button>
+            
+            <Notificacoes />
+         </div>
+
+         <FiltroModal isOpen={isModalOpen} onClose={closeModal} />
+      </div >
+   )
 }
