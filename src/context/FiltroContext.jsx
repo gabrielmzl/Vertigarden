@@ -12,80 +12,75 @@ export function FiltroProvider({ children }) {
     const { alertaErro } = useAlert();
 
     const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
     const [hasMoreFiltro, setHasMoreFiltro] = useState(true);
     const [pageFiltro, setPageFiltro] = useState(1);
-    const [loadingFiltro, setLoading] = useState(false);
+    const [loadingFiltro, setLoadingFiltro] = useState(false);
 
     const [notificationsFiltro, setNotificationsFiltro] = useState([]);
 
     const fetchNotifications = async (start, end) => {
-        setTimeout(async () => {
-            try {
-                const start = (page - 1) * 20 + 1;
-                const end = start + 19;
-
-                const { data } = await api.get(`/wlc?PagingStart=${start}&PagingEnd=${end}`);
-
-                console.log(data);
-                if (data.payload.length === 0) {
-                    setHasMore(false);
-                } else {
-                    setNotifications([...notifications, ...data.payload]);
-                    setPage(page + 1);
-                }
-            } catch (error) {
-                alertaErro("Erro ao carregar notificações");
-                setHasMore(false);
-            }
-        }, 1500);
-    };
-
-    const filtros = async (filtro) => {
         try {
-            setPageFiltro(1)
-            const start = (pageFiltro - 1) * 20 + 1;
+            setLoading(true);
+            const start = (page - 1) * 20 + 1;
             const end = start + 19;
 
-            let queryParams = `?PagingStart=${start}&PagingEnd=${end}`;
+            const { data } = await api.get(`/wlc?PagingStart=${start}&PagingEnd=${end}`);
 
-            if (filtro) {
-                if (filtro.device) {
-                    queryParams += `&Device=${filtro.device}`;
-                }
-                if (filtro.customer) {
-                    queryParams += `&Customer=${filtro.customer}`;
-                }
-                if (filtro.data) {
-                    queryParams += `&DateStart=${filtro.data}`;
-                }
-                if (filtro.data2) {
-                    queryParams += `&DateEnd=${filtro.data2}`;
-                }
-            }
-            setLoading(true);
-            const { data } = await api.get(`/wlc${queryParams}`);
-
+            console.log(data);
             if (data.payload.length === 0) {
-                setHasMoreFiltro(false);
-                setLoading(false);
-                alertaErro('Nenhuma notificação foi encontrada com esse filtro.')
+                setHasMore(false);
             } else {
-                
-                setNotificationsFiltro([...data.payload]);
-                setPageFiltro(pageFiltro + 1);
-
-                if (data.payload.length < 20) {
-                    setHasMoreFiltro(false);
-                }
-
-                setLoading(false);
+                setNotifications([...notifications, ...data.payload]);
+                setPage(page + 1);
             }
-        } catch (error) {
-            alertaErro("Erro ao carregar notificações");
-            setHasMoreFiltro(false);
             setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setNotifications([]);
+            alertaErro("Erro ao carregar notificações");
+            setHasMore(false);
+        }
+    };
+
+    const filtros = async (data) => {
+        if (data.data2 && data.data && data.data2 < data.data) {
+            console.error('Data final deve ser posterior à data inicial.');
+            return;
+        }
+        // Construção dos parâmetros de consulta
+        const queryParams = new URLSearchParams();
+
+        queryParams.append('PagingStart', '1');
+        queryParams.append('PagingEnd', '20');
+
+        if (data.device) queryParams.append('Device', data.device.label);
+        if (data.customer) queryParams.append('Customer', data.customer.value);
+        if (data.data) queryParams.append('DateStart', data.data);
+        if (data.data2) queryParams.append('DateEnd', data.data2);
+
+        try {
+            setLoadingFiltro(true);
+            setPageFiltro(1);
+
+            const { data: filtroData } = await api.get(`/wlc?${queryParams.toString()}`);
+
+            if (filtroData.payload.length === 0) {
+                setHasMoreFiltro(false);
+                alertaErro('Nenhuma notificação encontrada com esse filtro.');
+            } else {
+                setNotificationsFiltro([...filtroData.payload]);
+                setPageFiltro(pageFiltro + 1);
+                setHasMoreFiltro(filtroData.payload.length === 20);
+            }
+
+            setLoadingFiltro(false);
+        } catch (error) {
+            alertaErro('Erro ao carregar notificações.');
+            setHasMoreFiltro(false);
+            setLoadingFiltro(false);
         }
     }
 
@@ -99,7 +94,7 @@ export function FiltroProvider({ children }) {
     }, []);
 
     return (
-        <FiltroContext.Provider value={{ reset, notifications, setPageFiltro, fetchNotifications, hasMore, filtros, notificationsFiltro, hasMoreFiltro, loadingFiltro }}>
+        <FiltroContext.Provider value={{ reset, notifications, setHasMore, setPageFiltro, fetchNotifications, loading, hasMore, filtros, notificationsFiltro, hasMoreFiltro, loadingFiltro }}>
             {children}
         </FiltroContext.Provider>
     );

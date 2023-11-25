@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
             })
             
             localStorage.setItem('@token', data.payload);
+            api.defaults.headers.Authorization = data.payload;
             setIsAuthenticated(true);
             setToken(data.payload);
             navigate('/');

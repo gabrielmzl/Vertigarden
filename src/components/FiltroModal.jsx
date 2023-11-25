@@ -1,16 +1,40 @@
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFiltro } from "../context/FiltroContext";
-
+import useFormate from "../hooks/useFormate";
+import Select from 'react-select';
+import api from "../services/api";
 export function FiltroModal({ isOpen, onClose, children }) {
    if (!isOpen) return null;
 
    const { filtros, loadingFiltro, setPageFiltro } = useFiltro();
+   const { formatCpfCnpj } = useFormate();
+   const [clients, setClients] = useState();
+   const [devices, setDevices] = useState();
+
+   const fetchData = async () => {
+      try {
+         const [clientsData, devicesData] = await Promise.all([
+            api.get('/customer/all'),
+            api.get('/device/all')
+         ]);
+
+         setClients(clientsData.data);
+         setDevices(devicesData.data);
+      } catch (error) {
+         console.error('Error fetching data:', error);
+      }
+   };
+
+   useEffect(() => {
+      fetchData();
+   }, []);
 
    const {
       register,
       handleSubmit,
+      setValue,
       formState: { errors },
    } = useForm({
       mode: "onBlur",
@@ -20,6 +44,16 @@ export function FiltroModal({ isOpen, onClose, children }) {
       await filtros(data);
       onClose();
    }
+
+   const options = clients?.payload?.map(client => ({
+      value: client.id,
+      label: `${client.name} (${formatCpfCnpj(client.document)})`
+   }));
+
+   const options2 = devices?.payload?.map(device => ({
+      value: device.deviceID,
+      label: device.deviceToken
+   }));
 
    return (
       <div className="fixed inset-0">
@@ -43,15 +77,29 @@ export function FiltroModal({ isOpen, onClose, children }) {
 
                <div className="flex flex-col">
                   <label>Customer</label>
-                  <input {...register('customer')} type="number" className="border p-3 rounded outline-none mt-1" placeholder="Digite o ID aqui..." />
+                  {options && (
+                     <Select
+                        onChange={(selectedOption) => setValue('customer', selectedOption, { shouldValidate: true })}
+                        options={options}
+                        isSearchable={true}
+                        placeholder="Selecione uma opção..."
+                     />
+                  )}
                </div>
 
                <div className="flex flex-col mt-3">
                   <label>Device</label>
-                  <input {...register('device')} type="text" className="border p-3 rounded outline-none mt-1" placeholder="Digite o device aqui..." />
+                  {options && (
+                     <Select
+                        onChange={(selectedOption) => setValue('device', selectedOption, { shouldValidate: true })}
+                        options={options2}
+                        isSearchable={true}
+                        placeholder="Selecione uma opção..."
+                     />
+                  )}
                </div>
 
-               <div className="flex flex-col mt-3">
+               <div className="flex flex-col mt-4">
                   <label>Data</label>
                   <input {...register('data')} type="datetime-local" className="border p-3 rounded outline-none mt-1" />
 

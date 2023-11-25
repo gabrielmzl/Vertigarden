@@ -5,8 +5,12 @@ import { useFiltro } from "../context/FiltroContext";
 
 export function Notificacoes() {
 
-    const { notifications, fetchNotifications, hasMore, notificationsFiltro, filtros, hasMoreFiltro } = useFiltro();
+    const { notifications, setHasMore, fetchNotifications, hasMore, notificationsFiltro, filtros, hasMoreFiltro } = useFiltro();
     const { formatDate, formatCpfCnpj } = useFormate();
+
+    if (notifications.length == 0 || notifications.length <= 8) {
+        setHasMore(false)
+    }
 
     return (
         <div className="mt-6">
@@ -26,7 +30,6 @@ export function Notificacoes() {
                             </tr>
                         </thead>
                         <tbody>
-                            {console.log(notifications)}
                             {notifications.map((notification, index) => (
                                 <tr className={`bg-white border-b border-[#9C9C9C] ${index === 0 ? 'first-notification' : ''}`} key={notification.id}>
                                     <td>{notification.customerName} ({formatCpfCnpj(notification.customerDoc)})</td>
@@ -53,7 +56,6 @@ export function Notificacoes() {
                             </tr>
                         </thead>
                         <tbody>
-                            {console.log(notificationsFiltro)}
                             {notificationsFiltro.map((notificationFiltro, index) => (
                                 <tr className={`bg-white border-b border-[#9C9C9C] ${index === 0 ? 'first-notification' : ''}`} key={notificationFiltro.id}>
                                     <td>{notificationFiltro.customerName} ({notificationFiltro.customerDoc})</td>

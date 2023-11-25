@@ -1,42 +1,42 @@
-import { useEffect, useState } from "react";
-import { DeviceModal } from "../components/DeviceModal";
-import { useDevice } from "../context/DeviceContext";
+import { useEffect } from "react";
+import { ClienteModal } from "../components/ClienteModal";
+import { useCliente } from "../context/ClienteContext";
 import api from "../services/api";
 import useFormate from "../hooks/useFormate";
 
-export function Devices() {
+export function Admin() {
 
-  const { setOpen, userDevices, setUserDevices } = useDevice();
+  const { setOpen, setClients, clients } = useCliente()
   const { formatCpfCnpj } = useFormate();
 
+  const onOpenModal = () => setOpen(true);
+
   useEffect(() => {
-    async function getDevices() {
-      const response = await api.get('/device/all');
+    async function getClients() {
+      const response = await api.get('/customer/all');
       console.log(response.data);
 
-      setUserDevices(response.data);
+      setClients(response.data);
     }
 
-    getDevices();
+    getClients();
   }, [])
-
-  const onOpenModal = () => setOpen(true);
 
   return (
     <>
       <div className="w-full flex flex-col">
-        <h2 className="text-xl">Devices</h2>
+        <h2 className="text-xl">Admin</h2>
 
         <div>
           <button className="bg-green-dark mt-2 py-4 px-6 text-white rounded-md text-sm font-normal" onClick={onOpenModal}>
-            Cadastrar devices
+            Cadastrar cliente
           </button>
         </div>
 
         <div className="flex justify-between mt-4 items-center mb-8">
-          <h1>Todos os devices</h1>
+          <h1>Todos os clientes</h1>
 
-          <input type="text" placeholder="Pesquise por device aqui..." className="p-4 rounded-md w-96 outline-none shadow-lg" />
+          <input type="text" placeholder="Pesquise por clientes aqui..." className="p-4 rounded-md w-96 outline-none shadow-lg" />
         </div>
         <div>
           <table className="border border-[#9C9C9C] rounded">
@@ -44,23 +44,23 @@ export function Devices() {
               <tr className="bg-[#ECEFEB] border-b border-[#9C9C9C]">
                 <th>ID</th>
                 <th>Cliente</th>
-                <th>Dispositivo</th>
+                <th>Documento</th>
               </tr>
             </thead>
             <tbody>
-              {userDevices.payload &&
-                userDevices.payload
+              {clients.payload &&
+                clients.payload
                   .slice()
-                  .sort((a, b) => b.deviceID - a.deviceID)
-                  .map((device, index) => (
+                  .sort((a, b) => b.id - a.id)
+                  .map((client, index) => (
                     <tr
                       className={`bg-white border-b border-[#9C9C9C] ${index === 0 ? 'first-notification' : ''
                         }`}
-                      key={device.id}
+                      key={client.id}
                     >
-                      <td>{device.deviceID}</td>
-                      <td>{device.customerName} {formatCpfCnpj(device.customerDoc)}</td>
-                      <td>{device.deviceToken}</td>
+                      <td>{client.id}</td>
+                      <td>{client.name}</td>
+                      <td>{formatCpfCnpj(client.document)}</td>
                     </tr>
                   ))}
             </tbody>
@@ -68,7 +68,7 @@ export function Devices() {
         </div>
       </div>
 
-      <DeviceModal />
+      <ClienteModal />
     </>
-  )
+  );
 }

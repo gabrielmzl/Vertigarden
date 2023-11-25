@@ -9,14 +9,20 @@ import { FiltroProvider } from './context/FiltroContext.jsx'
 
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/global.css'
+import { DeviceProvider } from './context/DeviceContext.jsx'
+import { ClienteProvider } from './context/ClienteContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <AuthProvider>
       <FiltroProvider>
-        <App />
+        <DeviceProvider>
+          <ClienteProvider>
+            <App />
 
-        <ToastContainer />
+            <ToastContainer />
+          </ClienteProvider>
+        </DeviceProvider>
       </FiltroProvider>
     </AuthProvider>
   </BrowserRouter>
