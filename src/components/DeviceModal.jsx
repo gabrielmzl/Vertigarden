@@ -27,10 +27,9 @@ export function DeviceModal() {
     getClients();
   }, []);
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
 
   const onSubmitDevice = (data) => {
-    console.log(data);
     handleCreateDevice(data);
     onCloseModal();
     reset();

@@ -17,24 +17,30 @@ export function DeviceProvider({ children }) {
     const { alertaErro, alertaSucesso } = useAlert();
 
     async function handleCreateDevice(data) {
+        
         try {
-            const response = await api.post('/device', {
-                token: data.deviceToken,
-                ownerId: data.client.value
-            });
+            if (!data.client) {
+                const response = await api.post('/device', {
+                    token: data.deviceToken,
+                });
+            } else {
+                const response = await api.post('/device', {
+                    token: data.deviceToken,
+                    ownerId: data.client.value
+                });
+            }
 
-            alertaSucesso(response.data.payload);
+            alertaSucesso('Device criado com sucesso.');
             getDevices();
 
         } catch (error) {
-            console.log(error);
+            
             alertaErro('Erro ao cadastrar device!');
         }
     }
 
     async function getDevices() {
         const response = await api.get('/device/all');
-        console.log(response.data);
 
         setUserDevices(response.data);
     }

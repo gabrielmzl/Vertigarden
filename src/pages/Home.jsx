@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiltroModal } from "../components/FiltroModal";
 import { X } from "lucide-react";
 import { Notificacoes } from "../components/Notificacoes";
@@ -7,11 +7,15 @@ import useFormate from "../hooks/useFormate";
 import { Loader } from "../components/Loader";
 
 export function Home() {
-   const { notifications, reset, loading } = useFiltro();
+   const { notifications, reset, loading, fetchNotifications } = useFiltro();
    const { formatCpfCnpj, formatDate } = useFormate();
 
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [ultimaNotificacao, setUltimaNotificacao] = useState(true);
+
+   useEffect(() => {
+      fetchNotifications();
+  }, [])
 
    const openModal = () => {
       setIsModalOpen(true);
@@ -24,6 +28,7 @@ export function Home() {
    const closeUltimaNotificacao = () => {
       setUltimaNotificacao(false);
    };
+   
 
    return (
       <>

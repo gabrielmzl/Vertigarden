@@ -5,10 +5,11 @@ import { useFiltro } from "../context/FiltroContext";
 import useFormate from "../hooks/useFormate";
 import Select from 'react-select';
 import api from "../services/api";
+
 export function FiltroModal({ isOpen, onClose, children }) {
    if (!isOpen) return null;
 
-   const { filtros, loadingFiltro, setPageFiltro } = useFiltro();
+   const { filtros, loadingFiltro, setPageFiltro, setDeviceSelected, deviceSelected, setCustomerSelected, customerSelected, setDataSelected, dataSelected, setData2Selected, data2Selected } = useFiltro();
    const { formatCpfCnpj } = useFormate();
    const [clients, setClients] = useState();
    const [devices, setDevices] = useState();
@@ -41,6 +42,12 @@ export function FiltroModal({ isOpen, onClose, children }) {
    });
 
    const submitFiltro = async (data) => {
+
+      data.device ? setDeviceSelected(data?.device) : null;
+      data.customer ? setCustomerSelected(data?.customer) : null;
+      data.data ? setDataSelected(data?.data) : null;
+      data.data2 ? setData2Selected(data?.data2) : null;
+      
       await filtros(data);
       onClose();
    }
@@ -55,7 +62,7 @@ export function FiltroModal({ isOpen, onClose, children }) {
       label: device.deviceToken
    }));
 
-   return (
+   return isOpen ? (
       <div className="fixed inset-0">
          <div
             className="absolute inset-0 bg-black bg-opacity-50"
@@ -83,6 +90,12 @@ export function FiltroModal({ isOpen, onClose, children }) {
                         options={options}
                         isSearchable={true}
                         placeholder="Selecione uma opção..."
+                        defaultValue={
+                           customerSelected && {
+                              value: customerSelected.value,
+                              label: customerSelected.label,
+                           }
+                        }
                      />
                   )}
                </div>
@@ -95,17 +108,23 @@ export function FiltroModal({ isOpen, onClose, children }) {
                         options={options2}
                         isSearchable={true}
                         placeholder="Selecione uma opção..."
+                        defaultValue={
+                           deviceSelected && {
+                              value: deviceSelected.value,
+                              label: deviceSelected.label,
+                           }
+                        }
                      />
                   )}
                </div>
 
                <div className="flex flex-col mt-4">
                   <label>Data</label>
-                  <input {...register('data')} type="datetime-local" className="border p-3 rounded outline-none mt-1" />
+                  <input {...register('data')} type="datetime-local" defaultValue={dataSelected} className="border p-3 rounded outline-none mt-1" />
 
                   <span className="mt-2 mb-1 text-center">até</span>
 
-                  <input {...register('data2')} type="datetime-local" className="border p-3 rounded outline-none mt-1" />
+                  <input {...register('data2')} type="datetime-local" defaultValue={data2Selected} className="border p-3 rounded outline-none mt-1" />
 
                </div>
 
@@ -115,5 +134,5 @@ export function FiltroModal({ isOpen, onClose, children }) {
             </form>
          </div>
       </div>
-   );
+   ) : null;
 }

@@ -2,6 +2,7 @@ import useFormate from "../hooks/useFormate";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Loader } from "./Loader";
 import { useFiltro } from "../context/FiltroContext";
+import { useEffect } from "react";
 
 export function Notificacoes() {
 

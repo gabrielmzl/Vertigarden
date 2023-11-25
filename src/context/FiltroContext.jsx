@@ -21,6 +21,14 @@ export function FiltroProvider({ children }) {
 
     const [notificationsFiltro, setNotificationsFiltro] = useState([]);
 
+    const [deviceSelected, setDeviceSelected] = useState();
+    const [customerSelected, setCustomerSelected] = useState();
+    const [dataSelected, setDataSelected] = useState();
+    const [data2Selected, setData2Selected] = useState();
+
+    useEffect(() => {
+    }, [customerSelected])
+
     const fetchNotifications = async (start, end) => {
         try {
             setLoading(true);
@@ -29,7 +37,7 @@ export function FiltroProvider({ children }) {
 
             const { data } = await api.get(`/wlc?PagingStart=${start}&PagingEnd=${end}`);
 
-            console.log(data);
+            
             if (data.payload.length === 0) {
                 setHasMore(false);
             } else {
@@ -50,7 +58,7 @@ export function FiltroProvider({ children }) {
             console.error('Data final deve ser posterior à data inicial.');
             return;
         }
-        // Construção dos parâmetros de consulta
+
         const queryParams = new URLSearchParams();
 
         queryParams.append('PagingStart', '1');
@@ -87,14 +95,14 @@ export function FiltroProvider({ children }) {
     const reset = () => {
         setPageFiltro(1)
         setNotificationsFiltro([])
+        setDeviceSelected([])
+        setCustomerSelected([])
+        setDataSelected([])
+        setData2Selected([])
     }
 
-    useEffect(() => {
-        fetchNotifications();
-    }, []);
-
     return (
-        <FiltroContext.Provider value={{ reset, notifications, setHasMore, setPageFiltro, fetchNotifications, loading, hasMore, filtros, notificationsFiltro, hasMoreFiltro, loadingFiltro }}>
+        <FiltroContext.Provider value={{ reset, notifications, setDeviceSelected, deviceSelected, setCustomerSelected, customerSelected, setDataSelected, dataSelected, setData2Selected, data2Selected, setHasMore, setPageFiltro, fetchNotifications, loading, hasMore, filtros, notificationsFiltro, hasMoreFiltro, loadingFiltro }}>
             {children}
         </FiltroContext.Provider>
     );

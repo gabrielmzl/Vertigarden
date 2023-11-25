@@ -19,7 +19,7 @@ export function ClienteProvider({ children }) {
 
     async function handleCreateClient(data) {
         try {
-            console.log(data);
+            
 
             let docType = Number(data.docType)
 
@@ -32,7 +32,7 @@ export function ClienteProvider({ children }) {
             getClients(response.data.payload);
             alertaSucesso(response.data.payload);
         } catch (error) {
-            console.log(error);
+            
             alertaErro('Erro ao cadastrar device!');
         }
     }
@@ -45,7 +45,7 @@ export function ClienteProvider({ children }) {
 
     async function handleCreateClientJson(data) {
         try {
-            console.log(data);
+            
 
             const jsonData = JSON.parse(data.json);
 
@@ -54,7 +54,7 @@ export function ClienteProvider({ children }) {
             getClients(response.data.payload);
             alertaSucesso(response.data.payload);
         } catch (error) {
-            console.log(error);
+            
             alertaErro('Erro ao cadastrar device!');
         }
     }

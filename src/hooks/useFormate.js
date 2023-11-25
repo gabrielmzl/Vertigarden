@@ -17,7 +17,6 @@ export default function useFormate() {
     }
 
     const formatCpfCnpj = (value) => {
-        console.log(value);
         const number = value.replace(/\D/g, '');
 
         if (number.length === 11) {
@@ -25,7 +24,7 @@ export default function useFormate() {
         } else if (number.length === 14) {
             return number.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
         } else {
-            return 'CPF ou CNPJ inválido';
+            return '';
         }
     }
 

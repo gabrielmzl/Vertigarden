@@ -14,7 +14,6 @@ export function Admin() {
   useEffect(() => {
     async function getClients() {
       const response = await api.get('/customer/all');
-      console.log(response.data);
 
       setClients(response.data);
     }

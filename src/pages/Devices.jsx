@@ -12,7 +12,6 @@ export function Devices() {
   useEffect(() => {
     async function getDevices() {
       const response = await api.get('/device/all');
-      console.log(response.data);
 
       setUserDevices(response.data);
     }
