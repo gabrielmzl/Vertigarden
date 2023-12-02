@@ -17,7 +17,7 @@ export function DeviceProvider({ children }) {
     const { alertaErro, alertaSucesso } = useAlert();
 
     async function handleCreateDevice(data) {
-        
+
         try {
             if (!data.client) {
                 const response = await api.post('/device', {
@@ -34,15 +34,23 @@ export function DeviceProvider({ children }) {
             getDevices();
 
         } catch (error) {
-            
+
             alertaErro('Erro ao cadastrar device!');
         }
     }
 
     async function getDevices() {
-        const response = await api.get('/device/all');
+        try {
+            const response = await api.get('/device/all');
 
-        setUserDevices(response.data);
+            setUserDevices(response.data);
+        } catch (error) {
+            if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+                localStorage.removeItem('@token');
+                window.location.reload();
+                alertaErro('Sessão expirada, faça login novamente!');
+            }
+        }
     }
 
     return (

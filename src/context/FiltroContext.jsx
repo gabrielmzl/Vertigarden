@@ -37,7 +37,7 @@ export function FiltroProvider({ children }) {
 
             const { data } = await api.get(`/wlc?PagingStart=${start}&PagingEnd=${end}`);
 
-            
+
             if (data.payload.length === 0) {
                 setHasMore(false);
             } else {
@@ -86,6 +86,12 @@ export function FiltroProvider({ children }) {
 
             setLoadingFiltro(false);
         } catch (error) {
+            if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+                localStorage.removeItem('@token');
+                window.location.reload();
+                alertaErro('Sessão expirada, faça login novamente!');
+            }
+            
             alertaErro('Erro ao carregar notificações.');
             setHasMoreFiltro(false);
             setLoadingFiltro(false);

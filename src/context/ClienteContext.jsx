@@ -12,6 +12,7 @@ export function useCliente() {
 export function ClienteProvider({ children }) {
 
     const [open, setOpen] = useState(false);
+    const [adminOpen, setAdminOpen] = useState(false);
     const [open2, setOpen2] = useState(false);
     const [clients, setClients] = useState([]);
 
@@ -19,7 +20,7 @@ export function ClienteProvider({ children }) {
 
     async function handleCreateClient(data) {
         try {
-            
+            data.doc = data.doc.replace(/\D/g, '');
 
             let docType = Number(data.docType)
 
@@ -32,20 +33,28 @@ export function ClienteProvider({ children }) {
             getClients(response.data.payload);
             alertaSucesso(response.data.payload);
         } catch (error) {
-            
+
             alertaErro('Erro ao cadastrar device!');
         }
     }
 
     async function getClients() {
-        const { data } = await api.get('/customer/all');
+        try {
+            const { data } = await api.get('/customer/all');
 
-        setClients(data);
+            setClients(data);
+        } catch (error) {
+            if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+                localStorage.removeItem('@token');
+                window.location.reload();
+                alertaErro('Sessão expirada, faça login novamente!');
+            }
+        }
     }
 
     async function handleCreateClientJson(data) {
         try {
-            
+
 
             const jsonData = JSON.parse(data.json);
 
@@ -54,13 +63,13 @@ export function ClienteProvider({ children }) {
             getClients(response.data.payload);
             alertaSucesso(response.data.payload);
         } catch (error) {
-            
+
             alertaErro('Erro ao cadastrar device!');
         }
     }
 
     return (
-        <ClienteContext.Provider value={{ open, setOpen, open2, setOpen2, clients, setClients, handleCreateClient, handleCreateClientJson }}>
+        <ClienteContext.Provider value={{ open, setOpen, adminOpen, setAdminOpen, open2, setOpen2, clients, setClients, handleCreateClient, handleCreateClientJson }}>
             {children}
         </ClienteContext.Provider>
     );

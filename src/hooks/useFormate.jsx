@@ -1,3 +1,5 @@
+import { AlertTriangle } from "lucide-react";
+
 export default function useFormate() {
     const formatDate = (date) => {
         const inputDate = new Date(date);
@@ -24,7 +26,7 @@ export default function useFormate() {
         } else if (number.length === 14) {
             return number.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
         } else {
-            return '';
+            return <div className="flex items-center gap-2 text-[#EF4E4E]"><AlertTriangle size={32} color="#EF4E4E" strokeWidth={1.5} /> Este cliente não tem documento</div>;
         }
     }
 

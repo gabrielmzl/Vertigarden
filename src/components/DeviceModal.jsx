@@ -20,7 +20,11 @@ export function DeviceModal() {
         const { data } = await api.get('/customer/all');
         setClients(data);
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+          localStorage.removeItem('@token');
+          window.location.reload();
+          alertaErro('Sessão expirada, faça login novamente!');
+        }
       }
     }
 

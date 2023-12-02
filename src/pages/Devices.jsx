@@ -11,9 +11,17 @@ export function Devices() {
 
   useEffect(() => {
     async function getDevices() {
-      const response = await api.get('/device/all');
+      try {
+        const response = await api.get('/device/all');
 
-      setUserDevices(response.data);
+        setUserDevices(response.data);
+      } catch (error) {
+        if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+          localStorage.removeItem('@token');
+          window.location.reload();
+          alertaErro('Sessão expirada, faça login novamente!');
+        }
+      }
     }
 
     getDevices();
@@ -58,7 +66,11 @@ export function Devices() {
                       key={device.id}
                     >
                       <td>{device.deviceID}</td>
-                      <td>{device.customerName} {formatCpfCnpj(device.customerDoc)}</td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          {device.customerName} {formatCpfCnpj(device.customerDoc)}
+                        </div>
+                      </td>
                       <td>{device.deviceToken}</td>
                     </tr>
                   ))}

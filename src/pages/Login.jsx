@@ -23,7 +23,7 @@ export function Login() {
             </div>
             <div className="flex flex-col items-center justify-center flex-2 md:px-48 px-8">
                 <div className="mb-8">
-                    <img src="./logo_colorida.png" alt="Logo colorida" />
+                    <img src="/logo_colorida.png" alt="Logo colorida" />
                 </div>
 
                 <form onSubmit={handleSubmit(submitLogin)} className='w-full'>

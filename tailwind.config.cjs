@@ -14,7 +14,7 @@ module.exports = {
         'input': "rgba(255, 255, 255, 0.29)",
       },
       backgroundImage: {
-        'hero': "url('./login.png')"
+        'hero': "url('/login.png')"
       },
       flex: {
         '2': '2 2 0%'

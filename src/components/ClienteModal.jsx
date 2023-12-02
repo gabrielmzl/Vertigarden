@@ -13,6 +13,7 @@ export function ClienteModal() {
   const { open, setOpen, open2, setOpen2, handleCreateClient, handleCreateClientJson } = useCliente();
 
   const onsubmitdevice = (data) => {
+    console.log(data);
     handleCreateClient(data);
     onCloseModal();
     reset();
@@ -48,6 +49,18 @@ export function ClienteModal() {
     mode: "onBlur",
   });
 
+  const handleInputChange = (e) => {
+    let inputValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+
+    if (inputValue.length <= 11) {
+      inputValue = inputValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'); // Format CPF
+    } else {
+      inputValue = inputValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5'); // Format CNPJ
+    }
+
+    setValue('doc', inputValue, { shouldValidate: true, shouldDirty: true });
+  };
+
   return (
     <>
       <Modal open={open} onClose={onCloseModal}>
@@ -63,29 +76,39 @@ export function ClienteModal() {
                     Nome
                   </p>
                   <input type="text" placeholder='Digite o nome aqui...'
-                    {...register("name", { required: true })}
+                    {...register("name", { required: 'Nome é obrigatorio.' })}
                     className='shadow-xl p-4 mt-2 border border-gray-200 rounded outline-none w-96' />
+                  {errors.name && <p className="text-red-500">{errors.name.message}</p>}
                 </div>
 
                 <div className="mt-4">
                   <p className="text-sm text-gray-500">
                     Selecione o tipo de documento
                   </p>
-                  <select {...register("docType")} name="clients" id="clients" className='shadow-xl p-4 mt-2 border border-gray-200 rounded outline-none w-full' onChange={(e) => {
+                  <select {...register("docType", { required: 'O tipo do documento é obrigatorio.'})} name="clients" id="clients" className='shadow-xl p-4 mt-2 border border-gray-200 rounded outline-none w-full' onChange={(e) => {
                     setValue("docType", e.target.value, { shouldValidate: true });
                   }}>
                     <option value={0}>CPF</option>
                     <option value={1}>CNPJ</option>
                   </select>
+                  {errors.docType && <p className="text-red-500">{errors.docType.message}</p>}
                 </div>
 
                 <div className="mt-4">
                   <p className="text-sm text-gray-500">
                     Documento
                   </p>
-                  <input type="text" placeholder='Digite o documento aqui...'
-                    {...register("doc", { required: true })}
-                    className='shadow-xl p-4 mt-2 border border-gray-200 rounded outline-none w-96' />
+                  <input
+                    type="text"
+                    placeholder='Digite o documento aqui...'
+                    {...register("doc", {
+                      required: 'Documento é obrigatorio.',
+                    })}
+                    className={`shadow-xl p-4 mt-2 border border-gray-200 rounded outline-none w-96 ${errors.doc ? 'border-red-500' : '' // Add a red border if there's an error
+                      }`}
+                    onChange={handleInputChange}
+                  />
+                  {errors.doc && <p className="text-red-500">{errors.doc.message}</p>}
                 </div>
               </div>
             </div>

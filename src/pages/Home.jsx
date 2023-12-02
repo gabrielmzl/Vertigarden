@@ -15,7 +15,7 @@ export function Home() {
 
    useEffect(() => {
       fetchNotifications();
-  }, [])
+   }, [])
 
    const openModal = () => {
       setIsModalOpen(true);
@@ -28,7 +28,7 @@ export function Home() {
    const closeUltimaNotificacao = () => {
       setUltimaNotificacao(false);
    };
-   
+
 
    return (
       <>
@@ -41,25 +41,27 @@ export function Home() {
                   <div>
                      {notifications.length > 0 ? (
                         <>
-                           <div className="mt-4 rounded shadow-lg p-4 bg-white border border-green-dark w-2/4">
-                              <div className="flex justify-between items-center">
-                                 <h3>Ultima notificação</h3>
+                           {ultimaNotificacao ? (
+                              <div className="mt-4 rounded shadow-lg p-4 bg-white border border-green-dark w-2/4">
+                                 <div className="flex justify-between items-center">
+                                    <h3>Ultima notificação</h3>
 
-                                 <X className="hover:cursor-pointer" onClick={closeUltimaNotificacao} />
-                              </div>
+                                    <X className="hover:cursor-pointer" onClick={closeUltimaNotificacao} />
+                                 </div>
 
-                              <div className="flex flex-col mt-4">
-                                 <div>
-                                    <b>Cliente:</b> {notifications[0].customerName} ({formatCpfCnpj(notifications[0].customerDoc)})
-                                 </div>
-                                 <div>
-                                    <b>Dispositivo:</b> {notifications[0].deviceToken}
-                                 </div>
-                                 <div>
-                                    <b>Data:</b> {formatDate(notifications[0].capturedAt)}
+                                 <div className="flex flex-col mt-4">
+                                    <div>
+                                       <b>Cliente:</b> {notifications[0].customerName} ({formatCpfCnpj(notifications[0].customerDoc)})
+                                    </div>
+                                    <div>
+                                       <b>Dispositivo:</b> {notifications[0].deviceToken}
+                                    </div>
+                                    <div>
+                                       <b>Data:</b> {formatDate(notifications[0].capturedAt)}
+                                    </div>
                                  </div>
                               </div>
-                           </div>
+                           ) : null}
 
                            <button onClick={openModal} className="bg-green-light mt-8 py-2 px-6 text-white rounded-md text-sm font-normal">Filtros</button>
                            <button onClick={reset} className="ml-4">Resetar filtros</button>
@@ -68,7 +70,6 @@ export function Home() {
                         <div>
                            <div className="flex justify-between items-center">
                               <h3>Ultima notificação</h3>
-                              <X className="hover:cursor-pointer" />
                            </div>
 
                            <p>Nenhuma notificação disponível.</p>

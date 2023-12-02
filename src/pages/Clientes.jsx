@@ -3,19 +3,29 @@ import { ClienteModal } from "../components/ClienteModal";
 import { useCliente } from "../context/ClienteContext";
 import api from "../services/api";
 import useFormate from "../hooks/useFormate";
+import useAlert from "../hooks/useAlert";
 
-export function Admin() {
+export function Clientes() {
 
   const { setOpen, setClients, clients } = useCliente()
   const { formatCpfCnpj } = useFormate();
+  const { alertaErro } = useAlert()
 
   const onOpenModal = () => setOpen(true);
 
   useEffect(() => {
     async function getClients() {
-      const response = await api.get('/customer/all');
+      try {
+        const response = await api.get('/customer/all');
 
-      setClients(response.data);
+        setClients(response.data);
+      } catch (error) {
+        if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+          localStorage.removeItem('@token');
+          window.location.reload();
+          alertaErro('Sessão expirada, faça login novamente!');
+        }
+      }
     }
 
     getClients();
@@ -24,7 +34,7 @@ export function Admin() {
   return (
     <>
       <div className="w-full flex flex-col">
-        <h2 className="text-xl">Admin</h2>
+        <h2 className="text-xl">Clientes</h2>
 
         <div>
           <button className="bg-green-dark mt-2 py-4 px-6 text-white rounded-md text-sm font-normal" onClick={onOpenModal}>

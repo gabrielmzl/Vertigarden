@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { DashboardLayout } from "./pages/DashboardLayout";
 import { Devices } from "./pages/Devices";
-import { Admin } from "./pages/Admin";
+import { Clientes } from "./pages/Clientes";
 
 export function Router() {
    return (
@@ -10,7 +10,7 @@ export function Router() {
          <Route path="/" element={<DashboardLayout />}>
             <Route path="" element={<Home />} />
             <Route path="devices" element={<Devices />} />
-            <Route path="admin" element={<Admin />} />
+            <Route path="clientes" element={<Clientes />} />
          </Route>
       </Routes>
    )

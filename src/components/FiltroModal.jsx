@@ -24,7 +24,11 @@ export function FiltroModal({ isOpen, onClose, children }) {
          setClients(clientsData.data);
          setDevices(devicesData.data);
       } catch (error) {
-         console.error('Error fetching data:', error);
+         if (error.response.data.unauthenticated || error.response.data.unauthorized) {
+            localStorage.removeItem('@token');
+            window.location.reload();
+            alertaErro('Sessão expirada, faça login novamente!');
+         }
       }
    };
 
@@ -47,7 +51,7 @@ export function FiltroModal({ isOpen, onClose, children }) {
       data.customer ? setCustomerSelected(data?.customer) : null;
       data.data ? setDataSelected(data?.data) : null;
       data.data2 ? setData2Selected(data?.data2) : null;
-      
+
       await filtros(data);
       onClose();
    }
